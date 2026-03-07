@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>GramaBazaar</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-green-50">
+
+<!-- Navbar -->
+
+<nav class="bg-green-700 text-white p-4 flex justify-between items-center">
+
+<div class="flex items-center space-x-3">
+
+<img src="images/logo.png" class="w-10">
+
+<h1 class="text-2xl font-bold">GramaBazaar</h1>
+
+</div>
+
+<div class="space-x-6">
+
+<a href="cart.html">Cart</a>
+<a href="signup.html">Register</a>
+<a href="login.html">Login</a>
+
+</div>
+
+</nav>
+
+
+<!-- Hero Section -->
+
+<section class="bg-green-100 p-16 text-center">
+
+<h2 class="text-4xl font-bold mb-4">
+Fresh Products From Villages
+</h2>
+
+<p class="text-lg text-gray-700">
+Organic | Natural | Direct From Farmers
+</p>
+
+<br>
+ <a href="store.html" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300">
+  Shop Now
+</a>
+
+</section>
+
+<div class="max-w-md mx-auto my-6">
+<input 
+type="text"
+id="searchInput"
+placeholder="Search village products..."
+class="w-full p-3 border rounded-lg shadow">
+</div>
+
+
+<!-- Products Section -->
+
+<section class="p-10">
+
+<h2 class="text-2xl font-bold mb-6 text-center">
+Popular Products
+</h2>
+
+<div id="product-list" class="grid grid-cols-3 gap-8">
+
+</div>
+
+</section>
+
+<script type="module" src="/js/app.js"></script>
+<script type="module" src="/js/landingPage.js"></script>
+<script src="js/cart.js"></script>
+</body>
+
+</html>
