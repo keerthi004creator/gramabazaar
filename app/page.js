@@ -5,12 +5,13 @@ import { useCart } from "../context/cartContext";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
+
   const router = useRouter();
-  const { cartItems, addToCart, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
+
   const [username, setUsername] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
 
-  // Default featured items (static)
   const featuredItems = [
     { id: 1, name: "Vegetables", image: "https://images.unsplash.com/photo-1582281298055-e25b84a30b0b" },
     { id: 2, name: "Fruits", image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce" },
@@ -24,145 +25,228 @@ export default function Home() {
     { id: 10, name: "Organic Products", image: "https://www.nimbarkfoods.com/images/blog/WhatsApp%20Image%202022-08-22%20at%2010.58.57%20AM.jpeg" },
   ];
 
- useEffect(() => {
-  const user = localStorage.getItem("user");
+  useEffect(() => {
 
-  if (!user) {
-    router.replace("/login"); // block access if not logged in
-  } else {
-    setUsername(JSON.parse(user).username);
-  }
-}, [router]);
+    const user = localStorage.getItem("user");
 
-  // Calculate cart total
-  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    if (!user) {
+      router.replace("/login");
+    } else {
+      setUsername(JSON.parse(user).username);
+    }
+
+  }, [router]);
+
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      
-      {/* Navbar */}
-      <nav className="bg-white shadow-md px-6 py-3 flex justify-between items-center sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <img
-            src="https://lens.usercontent.google.com/banana?agsi=CmdnbG9iYWw6OjAwMDA1NWNmZWM3MDAyNmQ6MDAwMDAwZWI6MTo1NzZiZTI2NzdkYzk2YjJmOjAwMDA1NWNmZWM3MDAyNmQ6MDAwMDAxOTQ0ZjEwMzM2ODowMDA2NGM4MjI1YmM1NWRmEAI=" // Add your logo in the public folder
-            alt="GramaBazaar Logo"
-            className="h-10 w-10 object-contain"
-          />
-          <h1 className="text-2xl font-bold text-green-600">GramaBazaar</h1>
-        </div>
 
-        <div className="flex items-center gap-6">
-          {username ? (
-            <span className="font-semibold text-gray-700">Hello, {username}</span>
-          ) : (
-            <>
-              <button onClick={() => router.push("/login")} className="hover:text-green-600 transition">
-                Login
-              </button>
-              <button onClick={() => router.push("/signup")} className="hover:text-green-600 transition">
-                Sign Up
-              </button>
-            </>
-          )}
+    <div className="min-h-screen bg-white relative">
 
-          {/* Cart button */}
-          <button
-            onClick={() => setCartOpen(!cartOpen)}
-            className="relative flex items-center gap-1 text-gray-700 hover:text-green-600 transition"
-          >
-            Cart
-            {cartItems.length > 0 && (
-              <span className="absolute -top-2 -right-3 bg-red-500 text-white rounded-full px-2 text-xs">
-                {cartItems.length}
-              </span>
-            )}
-          </button>
+      {/* Village Background Watermark */}
+      <div
+        className="absolute inset-0 opacity-10 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1500382017468-9049fed747ef)",
+        }}
+      />
 
-          <button
-            onClick={() => router.push("/user")}
-            className="text-gray-700 hover:text-green-600 transition"
-          >
-            My Account
-          </button>
-        </div>
-      </nav>
+      <div className="relative z-10">
 
-      {/* Hero Section */}
-      <section className="text-center py-12 px-4 bg-gradient-to-r from-green-100 to-blue-50">
-        <h2 className="text-4xl font-bold mb-4 text-gray-800">Fresh Groceries Delivered</h2>
-        <p className="text-gray-600 mb-6 text-lg">
-          Shop vegetables, fruits, dairy & more with fast delivery.
-        </p>
-        <button
-          onClick={() => router.push("/shop")}
-          className="bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition"
-        >
-          Shop Now
-        </button>
-      </section>
+        {/* Navbar */}
+        <nav className="bg-white/90 backdrop-blur shadow-sm px-8 py-4 flex justify-between items-center sticky top-0">
 
-      {/* Featured Categories */}
-      <section className="px-6 py-12">
-        <h3 className="text-3xl font-semibold mb-8 text-center text-gray-800">Explore Categories</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-          {featuredItems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-2xl shadow hover:shadow-lg cursor-pointer transition flex flex-col items-center p-4"
+          <h1 className="text-2xl font-bold text-green-700">
+            🌾 GramaBazaar
+          </h1>
+
+          <div className="flex items-center gap-6">
+
+            <span className="text-gray-700 font-medium">
+              Hello : {username}
+            </span>
+
+            <button
+              onClick={() => setCartOpen(!cartOpen)}
+              className="relative"
             >
-              <img
-                src={item.image}
-                alt={item.name}
-                className="h-24 w-24 object-cover rounded-full mb-4"
-              />
-              <span className="font-semibold text-gray-700">{item.name}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+              🛒
 
-      {/* Cart Overlay */}
-      {cartOpen && (
-        <div className="fixed top-16 right-0 w-80 bg-white shadow-lg p-4 z-50 h-[80vh] overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4">Shopping Cart</h2>
-          {cartItems.length === 0 ? (
-            <p>Cart is empty</p>
-          ) : (
-            cartItems.map(item => (
-              <div key={item.id} className="flex justify-between items-center mb-2">
-                <div>
-                  <p>{item.name}</p>
-                  <p>Qty: {item.quantity}</p>
-                  <p>₹{item.price * item.quantity}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    className="bg-gray-200 px-2 rounded"
-                  >
-                    -
-                  </button>
-                  <button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="bg-gray-200 px-2 rounded"
-                  >
-                    +
-                  </button>
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="bg-red-500 text-white px-2 rounded"
-                  >
-                    x
-                  </button>
-                </div>
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 rounded-full">
+                  {cartItems.length}
+                </span>
+              )}
+
+            </button>
+
+            <button
+              onClick={() => router.push("/user")}
+              className="text-gray-700"
+            >
+              My Account
+            </button>
+
+          </div>
+
+        </nav>
+
+        {/* Hero */}
+        <section className="text-center py-20">
+
+          <h2 className="text-5xl font-bold text-gray-800 mb-4">
+            Fresh From Village Farms
+          </h2>
+
+          <p className="text-gray-600 text-lg mb-8">
+            Authentic groceries directly from farmers to your home
+          </p>
+
+          <button
+            onClick={() => router.push("/shop")}
+            className="bg-green-600 text-white px-10 py-3 rounded-full text-lg hover:bg-green-700 transition"
+          >
+            Shop Fresh Groceries
+          </button>
+
+        </section>
+
+        {/* Categories */}
+        <section className="px-10 pb-20">
+
+          <h3 className="text-3xl font-semibold text-center mb-12">
+            Explore Categories
+          </h3>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
+
+            {featuredItems.map((item) => (
+
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition p-6 text-center"
+              >
+
+                <img
+                  src={item.image}
+                  className="h-20 w-20 object-cover mx-auto rounded-full mb-4"
+                />
+
+                <p className="font-medium text-gray-700">
+                  {item.name}
+                </p>
+
               </div>
-            ))
-          )}
-          {cartItems.length > 0 && (
-            <div className="mt-4 font-bold">Total: ₹{cartTotal}</div>
-          )}
-        </div>
-      )}
+
+            ))}
+
+          </div>
+
+        </section>
+
+        {/* Cart Panel */}
+        {cartOpen && (
+
+          <div className="fixed right-0 top-16 w-80 bg-white shadow-xl p-6 h-[80vh] overflow-y-auto">
+
+            <h2 className="text-xl font-bold mb-4">
+              Shopping Cart
+            </h2>
+
+            {cartItems.length === 0 ? (
+
+              <p>Your cart is empty</p>
+
+            ) : (
+
+              <>
+                {cartItems.map((item) => (
+
+                  <div
+                    key={item.id}
+                    className="flex justify-between items-center mb-4 border-b pb-3"
+                  >
+
+                    {/* Product Info */}
+                    <div>
+
+                      <p className="font-semibold text-gray-700">
+                        {item.name}
+                      </p>
+
+                      <p className="text-sm text-gray-500">
+                        Qty: {item.quantity}
+                      </p>
+
+                      <p className="text-green-600 font-semibold">
+                        ₹{item.price * item.quantity}
+                      </p>
+
+                    </div>
+
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-2">
+
+                      <button
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity - 1)
+                        }
+                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      >
+                        -
+                      </button>
+
+                      <span className="font-medium">
+                        {item.quantity}
+                      </span>
+
+                      <button
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
+                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      >
+                        +
+                      </button>
+
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="bg-red-500 text-white px-2 py-1 rounded"
+                      >
+                        x
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                ))}
+
+                <div className="font-bold mt-4">
+                  Total ₹{cartTotal}
+                </div>
+
+                <button
+                  onClick={() => router.push("/checkout")}
+                  className="w-full bg-green-600 text-white py-2 rounded mt-4"
+                >
+                  Checkout
+                </button>
+
+              </>
+
+            )}
+
+          </div>
+
+        )}
+
+      </div>
+
     </div>
   );
 }

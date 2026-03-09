@@ -24,8 +24,8 @@ export default function AdminDashboard() {
     "Beverages",
     "Grains",
     "Spices",
-    "Meat & Fish",
-    "Others"
+    "Ice Creams",
+    "Chocolates",
   ];
 
   useEffect(() => {
