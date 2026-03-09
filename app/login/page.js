@@ -99,6 +99,15 @@ export default function LoginPage() {
         >
           Login
         </button>
+          <p className="text-center mt-4">
+    New User?{" "}
+    <span
+      onClick={() => router.push("/signup")}
+      className="text-blue-600 hover:underline cursor-pointer"
+    >
+      Sign Up
+    </span>
+  </p>
       </form>
     </div>
   );
