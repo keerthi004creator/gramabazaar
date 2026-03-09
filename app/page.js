@@ -270,10 +270,17 @@ export default function Home() {
 
         )}
 
+        <footer className="bg-gray-900 text-gray-300 py-10 text-center mt-20">
+
+        <p>
+          © 2026 GramaBazaar • Connecting Villages to Cities
+        </p>
+
+      </footer>
+
       </div>
 
     </div>
-
+   
   );
 }
-
