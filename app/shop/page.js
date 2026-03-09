@@ -6,6 +6,7 @@ import { useCart } from "../../context/cartContext";
 import { useRouter } from "next/navigation";
 
 export default function Shop() {
+
   const { addToCart } = useCart();
   const router = useRouter();
 
@@ -14,74 +15,64 @@ export default function Shop() {
       name: "Vegetables",
       image:
         "https://img.freepik.com/free-photo/healthy-vegetables-wooden-table_1150-38014.jpg",
-      bg: "bg-green-100",
     },
     {
       name: "Fruits",
       image:
-        "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=400&q=80",
-      bg: "bg-yellow-100",
+        "https://images.unsplash.com/photo-1610832958506-aa56368176cf",
     },
     {
       name: "Milk & Dairy",
       image:
-        "https://img.freepik.com/free-vector/realistic-milk-containers-table-poser_1284-21368.jpg?semt=ais_rp_50_assets&w=740&q=80",
-      bg: "bg-blue-100",
+        "https://img.freepik.com/free-vector/realistic-milk-containers-table-poser_1284-21368.jpg",
     },
     {
       name: "Bakery",
       image:
-        "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&w=400&q=80",
-      bg: "bg-orange-100",
+        "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
     },
     {
       name: "Snacks",
       image:
         "https://www.vikhrolicucina.com/uploads/stories/1674223639_samosasingaraindianfriedbakedpastrywithsavoryfillingspicedpotatoesonionpeas.jpg",
-      bg: "bg-pink-100",
     },
     {
       name: "Beverages",
       image:
-        "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80",
-      bg: "bg-purple-100",
+        "https://images.unsplash.com/photo-1551024709-8f23befc6f87",
     },
     {
       name: "Grains",
       image:
-        "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&w=400&q=80",
-      bg: "bg-yellow-200",
+        "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
     },
     {
       name: "Spices",
       image:
-        "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=400&q=80",
-      bg: "bg-red-100",
+        "https://images.unsplash.com/photo-1596040033229-a9821ebd058d",
     },
     {
       name: "Ice Creams",
       image:
         "https://shwetainthekitchen.com/wp-content/uploads/2020/08/IMG_9187.jpg",
-      bg: "bg-gray-200",
     },
     {
       name: "Chocolates",
       image:
         "https://jindalcocoa.com/cdn/shop/files/Dark_Chocolate_Hazelnut_Pista.jpg?v=1728627801",
-      bg: "bg-teal-100",
     },
   ];
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  // Fetch products
   useEffect(() => {
+
     const fetchProducts = async () => {
+
       const { data, error } = await supabase.from("products").select("*");
 
       if (error) {
@@ -90,13 +81,15 @@ export default function Shop() {
       } else {
         setProducts(data);
       }
+
     };
 
     fetchProducts();
+
   }, []);
 
-  // Category filter
   useEffect(() => {
+
     if (!selectedCategory) {
       setFilteredProducts([]);
       return;
@@ -107,10 +100,11 @@ export default function Shop() {
     );
 
     setFilteredProducts(filtered);
+
   }, [selectedCategory, products]);
 
-  // Search logic
   useEffect(() => {
+
     if (searchTerm.trim() === "") {
       setSearchResults([]);
       return;
@@ -121,185 +115,174 @@ export default function Shop() {
     );
 
     setSearchResults(results);
+
   }, [searchTerm, products]);
 
+  const displayedProducts =
+    searchTerm !== "" ? searchResults : filteredProducts;
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6 relative">
 
-      {/* Village Background Watermark */}
-      <div
-        className="absolute inset-0 opacity-10 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1500382017468-9049fed747ef)",
-        }}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-purple-700 via-indigo-600 to-pink-500 p-8">
 
-      <div className="relative z-10">
+      <h1 className="text-5xl font-bold text-white text-center mb-12 drop-shadow-lg">
+        Shop Fresh Products
+      </h1>
 
-      {/* Top Bar */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold">Shop By Category</h1>
-      </div>
+      <div className="flex justify-center mb-14">
 
-      {/* Search Bar */}
-      <div className="flex justify-center mb-10">
-        <div className="relative w-full md:w-1/2">
+        <div className="relative w-full md:w-[600px]">
 
           <input
             type="text"
             placeholder="Search products like Rice, Apple, Milk..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-4 pl-12 border rounded-xl shadow-md 
-            focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full p-4 pl-12 rounded-full
+            bg-white/20 backdrop-blur-md
+            border border-white/30
+            text-white placeholder-white/80
+            shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-300"
           />
 
-          <span className="absolute left-4 top-4 text-gray-400">
+          <span className="absolute left-4 top-4 text-white text-lg">
             🔍
           </span>
 
         </div>
+
       </div>
 
-      {/* Search Results */}
-      {searchTerm && (
-        <div className="mb-10">
+      <h2 className="text-white text-2xl font-semibold text-center mb-6">
+        Categories
+      </h2>
 
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">
-            Search Results
-          </h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-16">
 
-          {searchResults.length === 0 ? (
-            <p className="text-red-500 font-semibold">
-              Item not found
-            </p>
-          ) : (
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-              {searchResults.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white p-4 rounded shadow flex flex-col"
-                >
-
-                  <img
-                    src={product.image}
-                    className="h-40 w-full object-cover rounded mb-3"
-                  />
-
-                  <h4 className="text-lg font-semibold">
-                    {product.name}
-                  </h4>
-
-                  <p className="text-green-600 font-bold mt-1">
-                    ₹{product.price}
-                  </p>
-
-                  <button
-                    onClick={() => addToCart(product)}
-                    className="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-                  >
-                    Add to Cart
-                  </button>
-
-                </div>
-              ))}
-
-            </div>
-          )}
-
-        </div>
-      )}
-
-      {/* Categories */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 mb-10">
         {categories.map((cat, index) => (
+
           <div
             key={index}
             onClick={() => setSelectedCategory(cat.name)}
-            className={`cursor-pointer rounded-lg shadow-lg overflow-hidden transform transition hover:scale-105 ${cat.bg}`}
+            className="cursor-pointer group rounded-2xl overflow-hidden
+            bg-white/20 backdrop-blur-md
+            border border-white/30
+            shadow-xl hover:scale-105 transition"
           >
-            <img
-              src={cat.image}
-              alt={cat.name}
-              className="h-32 w-full object-cover"
-            />
-            <div className="p-3 text-center font-semibold">
+
+            <div className="h-32 overflow-hidden">
+
+              <img
+                src={cat.image}
+                alt={cat.name}
+                className="w-full h-full object-cover
+                group-hover:scale-110 transition duration-300"
+              />
+
+            </div>
+
+            <div className="p-3 text-center font-semibold text-white">
               {cat.name}
             </div>
+
           </div>
+
         ))}
+
       </div>
 
-      {/* Category Products */}
-      {selectedCategory && (
-        <div>
+      {displayedProducts.length > 0 && (
 
-          <h2 className="text-2xl font-bold mb-4 text-green-800">
-            {selectedCategory}
-          </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
 
-          {filteredProducts.length === 0 ? (
-            <p className="text-gray-500">
-              No products found in this category.
-            </p>
-          ) : (
+          {displayedProducts.map((product) => (
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div
+              key={product.id}
+              className="rounded-3xl
+              bg-white/20 backdrop-blur-lg
+              border border-white/30
+              shadow-2xl
+              hover:-translate-y-2 hover:scale-105
+              transition overflow-hidden flex flex-col"
+            >
 
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white p-4 rounded shadow flex flex-col"
-                >
+              <div className="p-6">
+
+                <div className="rounded-2xl overflow-hidden">
 
                   <img
                     src={product.image}
-                    className="h-40 w-full object-cover rounded mb-3"
+                    alt={product.name}
+                    className="h-44 w-full object-cover
+                    hover:scale-105 transition"
                   />
 
-                  <h4 className="text-lg font-semibold">
-                    {product.name}
-                  </h4>
-
-                  <p className="text-green-600 font-bold mt-1">
-                    ₹{product.price}
-                  </p>
-
-                  <button
-                    onClick={() => addToCart(product)}
-                    className="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-                  >
-                    Add to Cart
-                  </button>
-
                 </div>
-              ))}
+
+              </div>
+
+              <div className="p-5 flex flex-col flex-grow">
+
+                {/* GLASS PRODUCT NAME */}
+
+                <h3 className="text-lg font-semibold text-white/90 mb-2
+                bg-white/10 backdrop-blur-md
+                border border-white/20
+                rounded-lg px-3 py-1 w-fit">
+
+                  {product.name}
+
+                </h3>
+
+                <p className="text-purple-200 text-sm mb-3">
+                  Fresh farm product
+                </p>
+
+                <p className="text-2xl font-bold text-pink-300 mb-4">
+                  ₹{product.price}
+                </p>
+
+                <button
+                  onClick={() => addToCart(product)}
+                  className="mt-auto py-2 rounded-full text-white font-semibold
+                  bg-gradient-to-r from-pink-500 to-purple-500
+                  hover:scale-105 transition shadow-lg"
+                >
+                  Add to Cart
+                </button>
+
+              </div>
 
             </div>
-          )}
+
+          ))}
 
         </div>
+
       )}
 
-      {/* Back to Homepage */}
-      <div className="flex justify-center mt-12">
+      {displayedProducts.length === 0 && selectedCategory && (
+        <p className="text-white text-lg text-center">
+          No products found in this category.
+        </p>
+      )}
+
+      <div className="flex justify-center mt-16">
 
         <button
           onClick={() => router.push("/")}
-          className="px-8 py-3 rounded-xl text-white font-semibold text-lg
-          bg-gradient-to-r from-green-500 via-blue-500 to-purple-500
-          hover:from-green-600 hover:via-blue-600 hover:to-purple-600
-          shadow-lg transition transform hover:scale-105"
+          className="px-10 py-3 rounded-full text-white font-semibold
+          bg-gradient-to-r from-pink-500 to-purple-600
+          hover:scale-105 transition shadow-xl"
         >
           Back to Homepage
         </button>
 
       </div>
 
-      </div>
     </div>
+
   );
+
 }

@@ -15,47 +15,32 @@ export default function LoginPage() {
     setErrorMsg("");
 
     try {
-      // 1️⃣ Check admin table first
       const { data: adminData, error: adminError } = await supabase
-        .from("admin") // Your admin table
-        .select("*")
-        .eq("email", email)
-        .eq("password", password)
-        .single(); // Only one record
-
-      if (adminError && adminError.code !== "PGRST116") {
-        console.log(adminError);
-      }
-
-      if (adminData) {
-        // Admin credentials matched
-        localStorage.setItem("admin", JSON.stringify(adminData));
-        router.push("/admin/dashboard"); // Redirect to admin dashboard
-        return;
-      }
-
-      // 2️⃣ If not admin, check normal users table
-      const { data: userData, error: userError } = await supabase
-        .from("users") // Your user table
+        .from("admin")
         .select("*")
         .eq("email", email)
         .eq("password", password)
         .single();
 
-      if (userError) {
-        console.log(userError);
-        setErrorMsg("Email or password is incorrect.");
+      if (adminData) {
+        localStorage.setItem("admin", JSON.stringify(adminData));
+        router.push("/admin/dashboard");
         return;
       }
+
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .eq("password", password)
+        .single();
 
       if (userData) {
-        // User credentials matched
         localStorage.setItem("user", JSON.stringify(userData));
-        router.push("/"); // Redirect to home page
+        router.push("/");
         return;
       }
 
-      // If neither admin nor user matched
       setErrorMsg("Email or password is incorrect.");
     } catch (err) {
       console.log(err);
@@ -64,30 +49,34 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-500 p-4">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded shadow-md w-full max-w-md"
+        className="backdrop-blur-lg bg-white/80 shadow-xl border border-white/40 rounded-2xl p-8 w-full max-w-md"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+          Welcome Back
+        </h2>
 
         {errorMsg && (
-          <p className="bg-red-100 text-red-700 p-2 mb-4 rounded">{errorMsg}</p>
+          <p className="bg-red-100 text-red-600 p-2 mb-4 rounded">
+            {errorMsg}
+          </p>
         )}
 
-        <label className="block mb-2 font-semibold">Email</label>
+        <label className="block mb-2 font-medium text-gray-700">Email</label>
         <input
           type="email"
-          className="w-full border p-2 mb-4 rounded"
+          className="w-full border border-gray-300 p-3 mb-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
 
-        <label className="block mb-2 font-semibold">Password</label>
+        <label className="block mb-2 font-medium text-gray-700">Password</label>
         <input
           type="password"
-          className="w-full border p-2 mb-6 rounded"
+          className="w-full border border-gray-300 p-3 mb-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -95,19 +84,20 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+          className="w-full bg-gradient-to-r from-indigo-600 to-cyan-500 text-white py-3 rounded-lg font-semibold hover:scale-[1.02] transition"
         >
           Login
         </button>
-          <p className="text-center mt-4">
-    New User?{" "}
-    <span
-      onClick={() => router.push("/signup")}
-      className="text-blue-600 hover:underline cursor-pointer"
-    >
-      Sign Up
-    </span>
-  </p>
+
+        <p className="text-center mt-5 text-gray-600">
+          New User?{" "}
+          <span
+            onClick={() => router.push("/signup")}
+            className="text-indigo-600 font-medium hover:underline cursor-pointer"
+          >
+            Sign Up
+          </span>
+        </p>
       </form>
     </div>
   );

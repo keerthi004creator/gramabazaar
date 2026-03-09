@@ -1,7 +1,6 @@
 "use client";
+
 import { createContext, useContext, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import cart from "../app/cart/page";
 
 const CartContext = createContext();
 
@@ -9,38 +8,48 @@ export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
+  // Add item
   const addToCart = (product) => {
-    setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+
       if (existing) {
-        return prev.map(item =>
+        return prev.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
-      } else {
-        return [...prev, { ...product, quantity: 1 }];
       }
+
+      return [...prev, { ...product, quantity: 1 }];
     });
+
+    setCartOpen(true);
   };
 
-  const removeFromCart = (productId) =>
-    setCartItems(prev => prev.filter(item => item.id !== productId));
+  // Remove item
+  const removeFromCart = (id) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
 
-  const updateQuantity = (productId, quantity) => {
+  // Update quantity
+  const updateQuantity = (id, quantity) => {
     if (quantity < 1) return;
 
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === productId ? { ...item, quantity } : item
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity } : item
       )
     );
   };
 
-  const cartTotal = useMemo(
-    () => cartItems.reduce((total, item) => total + item.price * item.quantity, 0),
-    [cartItems]
-  );
+  // Total price
+  const cartTotal = useMemo(() => {
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  }, [cartItems]);
 
   return (
     <CartContext.Provider
@@ -51,7 +60,7 @@ export function CartProvider({ children }) {
         updateQuantity,
         cartTotal,
         cartOpen,
-        setCartOpen
+        setCartOpen,
       }}
     >
       {children}

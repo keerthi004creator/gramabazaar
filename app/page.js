@@ -13,7 +13,6 @@ export default function Home() {
   const [username, setUsername] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
 
-  // SHOW LOGO ONLY ONCE PER LOGIN SESSION
   const [showLogo, setShowLogo] = useState(
     typeof window !== "undefined" && !sessionStorage.getItem("logoShown")
   );
@@ -41,8 +40,8 @@ export default function Home() {
       setUsername(JSON.parse(user).username);
     }
 
-    // SHOW LOGO ONLY IF NOT ALREADY SHOWN
     if (!sessionStorage.getItem("logoShown")) {
+
       const timer = setTimeout(() => {
         setShowLogo(false);
         sessionStorage.setItem("logoShown", "true");
@@ -58,19 +57,12 @@ export default function Home() {
     0
   );
 
-  // LOGO SPLASH
   if (showLogo) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-100 to-yellow-100">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-700 via-indigo-600 to-pink-500">
         <div className="text-center animate-pulse">
-          <Image
-            src="/images/logo.png"
-            alt="GramaBazaar Logo"
-            width={400}
-            height={400}
-            className="mx-auto drop-shadow-xl"
-          />
-          <h1 className="text-4xl font-bold text-orange-700 mt-4 tracking-wide">
+          <Image src="/images/logo.png" alt="logo" width={420} height={420}/>
+          <h1 className="text-5xl font-bold text-white mt-4 tracking-widest">
             GramaBazaar
           </h1>
         </div>
@@ -80,197 +72,185 @@ export default function Home() {
 
   return (
 
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white relative">
+    <div className="min-h-screen bg-gradient-to-br from-purple-700 via-indigo-600 to-pink-500 text-white relative overflow-hidden">
 
-      <div className="relative z-10">
+      {/* Glow Background */}
 
-        {/* Navbar */}
-        <nav className="bg-white shadow-md px-10 py-4 flex justify-between items-center sticky top-0 z-50">
+      <div className="absolute top-0 left-0 w-96 h-96 bg-pink-400 blur-[120px] opacity-40"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-400 blur-[120px] opacity-40"></div>
 
-          <h1 className="text-3xl font-bold text-orange-600 tracking-wide">
-            🛍 GramaBazaar
-          </h1>
+      {/* NAVBAR */}
 
-          <div className="flex items-center gap-8">
+      <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/10 border-b border-white/20 px-12 py-4 flex justify-between items-center shadow-xl">
 
-            <span className="text-gray-700 font-semibold text-lg">
-              Hello, {username}
-            </span>
+        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-pink-400 to-indigo-300 bg-clip-text text-transparent">
+          🛍 GramaBazaar
+        </h1>
 
-            <button
-              onClick={() => setCartOpen(!cartOpen)}
-              className="relative text-2xl hover:scale-110 transition"
-            >
-              🛒
+        <div className="flex items-center gap-8">
 
-              {cartItems.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 rounded-full">
-                  {cartItems.length}
-                </span>
-              )}
-
-            </button>
-
-            <button
-              onClick={() => router.push("/user")}
-              className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition"
-            >
-              My Account
-            </button>
-
-          </div>
-
-        </nav>
-
-        {/* Hero Section */}
-        <section className="text-center py-24 bg-gradient-to-r from-orange-200 via-yellow-100 to-orange-100">
-
-          <h2 className="text-5xl font-extrabold text-gray-800 mb-6">
-            Discover Fresh Village Groceries
-          </h2>
-
-          <p className="text-gray-600 text-xl mb-10">
-            Fresh vegetables, fruits and organic products directly from farmers
-          </p>
+          <span className="font-medium text-white/90">
+            Hello, {username}
+          </span>
 
           <button
-            onClick={() => router.push("/shop")}
-            className="bg-orange-500 text-white px-12 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-orange-600 hover:scale-105 transition"
+            onClick={() => setCartOpen(!cartOpen)}
+            className="relative text-2xl hover:scale-125 transition"
           >
-            Shop Now
+            🛒
+
+            {cartItems.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs px-2 rounded-full animate-bounce">
+                {cartItems.length}
+              </span>
+            )}
+
           </button>
 
-        </section>
+          <button
+            onClick={() => router.push("/user")}
+            className="bg-gradient-to-r from-pink-500 to-indigo-500 px-5 py-2 rounded-full shadow-lg hover:scale-105 transition"
+          >
+            My Account
+          </button>
 
-        {/* Categories */}
-        <section className="px-12 py-20">
+        </div>
 
-          <h3 className="text-4xl font-bold text-center mb-14 text-gray-800">
-            Shop by Category
-          </h3>
+      </nav>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10">
+      {/* HERO */}
 
-            {featuredItems.map((item) => (
+      <section className="text-center py-32">
 
-              <div
-                key={item.id}
-                className="bg-white rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition p-6 text-center cursor-pointer"
-              >
+        <h2 className="text-6xl font-extrabold mb-6 bg-gradient-to-r from-pink-300 via-white to-indigo-300 bg-clip-text text-transparent">
 
-                <img
-                  src={item.image}
-                  className="h-24 w-24 object-cover mx-auto rounded-full mb-4 border-4 border-orange-100"
-                />
+          Fresh Village Groceries
 
-                <p className="font-semibold text-gray-700 text-lg">
-                  {item.name}
-                </p>
+        </h2>
+
+        <p className="text-white/80 text-xl mb-10">
+          Organic fruits, vegetables and traditional foods directly from farmers
+        </p>
+
+        <button
+          onClick={() => router.push("/shop")}
+          className="bg-gradient-to-r from-pink-500 to-indigo-500 px-16 py-4 rounded-full text-lg shadow-2xl hover:scale-110 transition"
+        >
+          Shop Now
+        </button>
+
+      </section>
+
+      {/* CATEGORY GRID */}
+
+      <section className="px-12 pb-24">
+
+        <h3 className="text-4xl font-bold text-center mb-16">
+          Shop by Category
+        </h3>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10">
+
+          {featuredItems.map((item) => (
+
+            <div
+              key={item.id}
+              className="group bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-xl hover:-translate-y-3 hover:shadow-2xl transition p-6 text-center cursor-pointer"
+            >
+
+              <img
+                src={item.image}
+                className="h-24 w-24 object-cover mx-auto rounded-full mb-4 border-4 border-white/30 group-hover:scale-110 transition"
+              />
+
+              <p className="font-semibold text-white text-lg">
+                {item.name}
+              </p>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </section>
+
+      {/* CART DRAWER */}
+
+      <div className={`fixed top-0 right-0 h-full w-96 bg-white text-gray-800 shadow-2xl p-6 overflow-y-auto transform transition-transform duration-300 ${cartOpen ? "translate-x-0" : "translate-x-full"}`}>
+
+        <h2 className="text-2xl font-bold mb-6 text-indigo-600">
+          Your Cart
+        </h2>
+
+        {cartItems.length === 0 ? (
+
+          <p className="text-gray-500">Your cart is empty</p>
+
+        ) : (
+
+          <>
+            {cartItems.map((item) => (
+
+              <div key={item.id} className="flex justify-between items-center mb-5 border-b pb-4">
+
+                <div>
+                  <p className="font-semibold">{item.name}</p>
+                  <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                  <p className="text-indigo-600 font-bold">₹{item.price * item.quantity}</p>
+                </div>
+
+                <div className="flex items-center gap-2">
+
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="px-3 py-1 bg-gray-200 rounded"
+                  >
+                    -
+                  </button>
+
+                  <span>{item.quantity}</span>
+
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="px-3 py-1 bg-gray-200 rounded"
+                  >
+                    +
+                  </button>
+
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="bg-red-500 text-white px-2 py-1 rounded"
+                  >
+                    x
+                  </button>
+
+                </div>
 
               </div>
 
             ))}
 
-          </div>
+            <div className="font-bold text-lg mt-4">
+              Total ₹{cartTotal}
+            </div>
 
-        </section>
+            <button
+              onClick={() => router.push("/checkout")}
+              className="w-full bg-gradient-to-r from-pink-500 to-indigo-500 text-white py-3 rounded-xl mt-5 hover:scale-105 transition"
+            >
+              Checkout
+            </button>
 
-        {/* Cart Panel */}
-        {cartOpen && (
-
-          <div className="fixed right-0 top-16 w-96 bg-white shadow-2xl p-6 h-[85vh] overflow-y-auto border-l">
-
-            <h2 className="text-2xl font-bold mb-6 text-orange-600">
-              Your Cart
-            </h2>
-
-            {cartItems.length === 0 ? (
-
-              <p className="text-gray-500">Your cart is empty</p>
-
-            ) : (
-
-              <>
-                {cartItems.map((item) => (
-
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center mb-5 border-b pb-4"
-                  >
-
-                    <div>
-
-                      <p className="font-semibold text-gray-800">
-                        {item.name}
-                      </p>
-
-                      <p className="text-sm text-gray-500">
-                        Qty: {item.quantity}
-                      </p>
-
-                      <p className="text-orange-600 font-bold">
-                        ₹{item.price * item.quantity}
-                      </p>
-
-                    </div>
-
-                    <div className="flex items-center gap-2">
-
-                      <button
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity - 1)
-                        }
-                        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                      >
-                        -
-                      </button>
-
-                      <span className="font-semibold">
-                        {item.quantity}
-                      </span>
-
-                      <button
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity + 1)
-                        }
-                        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                      >
-                        +
-                      </button>
-
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded"
-                      >
-                        x
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                ))}
-
-                <div className="font-bold text-lg mt-4 text-gray-800">
-                  Total ₹{cartTotal}
-                </div>
-
-                <button
-                  onClick={() => router.push("/checkout")}
-                  className="w-full bg-orange-500 text-white py-3 rounded-xl mt-5 hover:bg-orange-600 transition"
-                >
-                  Checkout
-                </button>
-
-              </>
-
-            )}
-
-          </div>
+          </>
 
         )}
 
-        <footer className="bg-gray-900 text-gray-300 py-10 text-center mt-20">
+      </div>
+
+      {/* FOOTER */}
+
+      <footer className="bg-black/40 backdrop-blur-md text-white py-10 text-center">
 
         <p>
           © 2026 GramaBazaar • Connecting Villages to Cities
@@ -278,9 +258,6 @@ export default function Home() {
 
       </footer>
 
-      </div>
-
     </div>
-   
   );
 }

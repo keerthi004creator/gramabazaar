@@ -46,55 +46,152 @@ export default function UserPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-blue-50 p-6 flex flex-col items-center">
-      <div className="w-full max-w-3xl bg-white rounded-3xl shadow-xl p-8">
-        <h2 className="text-4xl font-bold mb-6 text-green-600 text-center">My Account</h2>
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F3FF] via-[#EEF2FF] to-[#ECFEFF] p-8 flex justify-center items-start">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* User Info */}
-          <div className="bg-green-50 p-4 rounded-2xl shadow flex flex-col gap-2">
-            <h3 className="font-semibold text-lg text-gray-700">User Info</h3>
-            <p><strong>Name:</strong> {user.username}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Phone:</strong> {editing ? <input className="border p-1 rounded" value={phone} onChange={(e)=>setPhone(e.target.value)} /> : (user.phone || "Not Provided")}</p>
-            <p><strong>Address:</strong> {editing ? <textarea className="border p-1 rounded" value={address} onChange={(e)=>setAddress(e.target.value)} /> : (user.address || "Not Provided")}</p>
+      <div className="w-full max-w-5xl bg-white border border-[#E5E7EB] rounded-3xl shadow-xl p-10">
+
+        <h2 className="text-4xl font-bold text-center mb-10 
+        bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] bg-clip-text text-transparent">
+          My Account
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          {/* USER PROFILE CARD */}
+          <div className="bg-white border border-[#E5E7EB] rounded-3xl shadow-md p-6 transition hover:shadow-xl hover:-translate-y-1 flex flex-col gap-3">
+
+            <h3 className="text-xl font-semibold text-[#111827] mb-2">
+              User Info
+            </h3>
+
+            <p className="text-[#111827]">
+              <strong>Name:</strong> {user.username}
+            </p>
+
+            <p className="text-[#111827]">
+              <strong>Email:</strong> {user.email}
+            </p>
+
+            <p className="text-[#111827]">
+              <strong>Phone:</strong>{" "}
+              {editing ? (
+                <input
+                  className="border border-[#D1D5DB] rounded-lg p-2 mt-1 w-full focus:ring-2 focus:ring-indigo-500 outline-none"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              ) : (
+                <span className="text-[#6B7280]">
+                  {user.phone || "Not Provided"}
+                </span>
+              )}
+            </p>
+
+            <p className="text-[#111827]">
+              <strong>Address:</strong>{" "}
+              {editing ? (
+                <textarea
+                  className="border border-[#D1D5DB] rounded-lg p-2 mt-1 w-full focus:ring-2 focus:ring-indigo-500 outline-none"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              ) : (
+                <span className="text-[#6B7280]">
+                  {user.address || "Not Provided"}
+                </span>
+              )}
+            </p>
+
             {!editing ? (
-              <button onClick={()=>setEditing(true)} className="bg-blue-500 text-white px-3 py-1 rounded mt-2">Edit</button>
+              <button
+                onClick={() => setEditing(true)}
+                className="mt-3 px-4 py-2 rounded-xl text-white font-semibold
+                bg-gradient-to-r from-[#4F46E5] to-[#06B6D4]
+                hover:opacity-90 transition shadow"
+              >
+                Edit Profile
+              </button>
             ) : (
-              <button onClick={handleSaveProfile} className="bg-green-600 text-white px-3 py-1 rounded mt-2">Save</button>
+              <button
+                onClick={handleSaveProfile}
+                className="mt-3 px-4 py-2 rounded-xl text-white font-semibold
+                bg-emerald-500 hover:bg-emerald-600 transition shadow"
+              >
+                Save Profile
+              </button>
             )}
+
           </div>
 
-          {/* Orders Info */}
-          <div className="bg-green-50 p-4 rounded-2xl shadow flex flex-col gap-2">
-            <h3 className="font-semibold text-lg text-gray-700">Orders</h3>
+          {/* ORDERS CARD */}
+          <div className="bg-white border border-[#E5E7EB] rounded-3xl shadow-md p-6 transition hover:shadow-xl hover:-translate-y-1 flex flex-col gap-3">
+
+            <h3 className="text-xl font-semibold text-[#111827] mb-2">
+              Orders
+            </h3>
+
             {user.orders?.length > 0 ? (
               user.orders.map((order, idx) => (
-                <div key={idx} className="bg-white p-3 rounded-lg shadow-sm mb-4">
-                  <p><strong>Order ID:</strong> {order.id}</p>
-                  <p><strong>Total:</strong> ₹{order.total}</p>
-                  <p><strong>Status:</strong> {order.status}</p>
-                  <p><strong>Items:</strong></p>
-                  <ul className="ml-4 list-disc">
-                    {order.items?.map((i)=>(
-                      <li key={i.id}>{i.name} × {i.quantity} (₹{i.price})</li>
+                <div
+                  key={idx}
+                  className="bg-gray-50 border border-[#E5E7EB] rounded-xl p-4 shadow-sm mb-4"
+                >
+
+                  <p className="text-sm text-gray-700">
+                    <strong>Order ID:</strong> {order.id}
+                  </p>
+
+                  <p className="text-sm text-gray-700">
+                    <strong>Total:</strong>{" "}
+                    <span className="text-emerald-600 font-semibold">
+                      ₹{order.total}
+                    </span>
+                  </p>
+
+                  <p className="text-sm text-gray-700">
+                    <strong>Status:</strong>{" "}
+                    <span className="text-indigo-600 font-medium">
+                      {order.status}
+                    </span>
+                  </p>
+
+                  <p className="mt-2 font-semibold text-gray-700">Items:</p>
+
+                  <ul className="ml-5 list-disc text-sm text-gray-600">
+                    {order.items?.map((i) => (
+                      <li key={i.id}>
+                        {i.name} × {i.quantity} (₹{i.price})
+                      </li>
                     ))}
                   </ul>
+
                 </div>
               ))
             ) : (
-              <p>No orders yet.</p>
+              <p className="text-[#6B7280]">
+                No orders yet.
+              </p>
             )}
+
           </div>
+
         </div>
 
-        {/* Logout Button */}
-        <div className="flex justify-center mt-6">
-          <button onClick={handleLogout} className="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition">
+        {/* LOGOUT BUTTON */}
+        <div className="flex justify-center mt-10">
+
+          <button
+            onClick={handleLogout}
+            className="px-6 py-3 rounded-xl font-semibold text-white
+            bg-rose-500 hover:bg-rose-600 transition shadow-lg"
+          >
             Logout
           </button>
+
         </div>
+
       </div>
+
     </div>
   );
 }
