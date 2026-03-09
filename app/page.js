@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useCart } from "../context/cartContext";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Home() {
 
@@ -11,6 +12,11 @@ export default function Home() {
 
   const [username, setUsername] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
+
+  // SHOW LOGO ONLY ONCE PER LOGIN SESSION
+  const [showLogo, setShowLogo] = useState(
+    typeof window !== "undefined" && !sessionStorage.getItem("logoShown")
+  );
 
   const featuredItems = [
     { id: 1, name: "Vegetables", image: "https://images.unsplash.com/photo-1582281298055-e25b84a30b0b" },
@@ -35,6 +41,16 @@ export default function Home() {
       setUsername(JSON.parse(user).username);
     }
 
+    // SHOW LOGO ONLY IF NOT ALREADY SHOWN
+    if (!sessionStorage.getItem("logoShown")) {
+      const timer = setTimeout(() => {
+        setShowLogo(false);
+        sessionStorage.setItem("logoShown", "true");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+
   }, [router]);
 
   const cartTotal = cartItems.reduce(
@@ -42,37 +58,48 @@ export default function Home() {
     0
   );
 
+  // LOGO SPLASH
+  if (showLogo) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-100 to-yellow-100">
+        <div className="text-center animate-pulse">
+          <Image
+            src="/images/logo.png"
+            alt="GramaBazaar Logo"
+            width={400}
+            height={400}
+            className="mx-auto drop-shadow-xl"
+          />
+          <h1 className="text-4xl font-bold text-orange-700 mt-4 tracking-wide">
+            GramaBazaar
+          </h1>
+        </div>
+      </div>
+    );
+  }
+
   return (
 
-    <div className="min-h-screen bg-white relative">
-
-      {/* Village Background Watermark */}
-      <div
-        className="absolute inset-0 opacity-10 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1500382017468-9049fed747ef)",
-        }}
-      />
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white relative">
 
       <div className="relative z-10">
 
         {/* Navbar */}
-        <nav className="bg-white/90 backdrop-blur shadow-sm px-8 py-4 flex justify-between items-center sticky top-0">
+        <nav className="bg-white shadow-md px-10 py-4 flex justify-between items-center sticky top-0 z-50">
 
-          <h1 className="text-2xl font-bold text-green-700">
-            🌾 GramaBazaar
+          <h1 className="text-3xl font-bold text-orange-600 tracking-wide">
+            🛍 GramaBazaar
           </h1>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8">
 
-            <span className="text-gray-700 font-medium">
-              Hello : {username}
+            <span className="text-gray-700 font-semibold text-lg">
+              Hello, {username}
             </span>
 
             <button
               onClick={() => setCartOpen(!cartOpen)}
-              className="relative"
+              className="relative text-2xl hover:scale-110 transition"
             >
               🛒
 
@@ -86,7 +113,7 @@ export default function Home() {
 
             <button
               onClick={() => router.push("/user")}
-              className="text-gray-700"
+              className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition"
             >
               My Account
             </button>
@@ -95,48 +122,48 @@ export default function Home() {
 
         </nav>
 
-        {/* Hero */}
-        <section className="text-center py-20">
+        {/* Hero Section */}
+        <section className="text-center py-24 bg-gradient-to-r from-orange-200 via-yellow-100 to-orange-100">
 
-          <h2 className="text-5xl font-bold text-gray-800 mb-4">
-            Fresh From Village Farms
+          <h2 className="text-5xl font-extrabold text-gray-800 mb-6">
+            Discover Fresh Village Groceries
           </h2>
 
-          <p className="text-gray-600 text-lg mb-8">
-            Authentic groceries directly from farmers to your home
+          <p className="text-gray-600 text-xl mb-10">
+            Fresh vegetables, fruits and organic products directly from farmers
           </p>
 
           <button
             onClick={() => router.push("/shop")}
-            className="bg-green-600 text-white px-10 py-3 rounded-full text-lg hover:bg-green-700 transition"
+            className="bg-orange-500 text-white px-12 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-orange-600 hover:scale-105 transition"
           >
-            Shop Fresh Groceries
+            Shop Now
           </button>
 
         </section>
 
         {/* Categories */}
-        <section className="px-10 pb-20">
+        <section className="px-12 py-20">
 
-          <h3 className="text-3xl font-semibold text-center mb-12">
-            Explore Categories
+          <h3 className="text-4xl font-bold text-center mb-14 text-gray-800">
+            Shop by Category
           </h3>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10">
 
             {featuredItems.map((item) => (
 
               <div
                 key={item.id}
-                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition p-6 text-center"
+                className="bg-white rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition p-6 text-center cursor-pointer"
               >
 
                 <img
                   src={item.image}
-                  className="h-20 w-20 object-cover mx-auto rounded-full mb-4"
+                  className="h-24 w-24 object-cover mx-auto rounded-full mb-4 border-4 border-orange-100"
                 />
 
-                <p className="font-medium text-gray-700">
+                <p className="font-semibold text-gray-700 text-lg">
                   {item.name}
                 </p>
 
@@ -151,15 +178,15 @@ export default function Home() {
         {/* Cart Panel */}
         {cartOpen && (
 
-          <div className="fixed right-0 top-16 w-80 bg-white shadow-xl p-6 h-[80vh] overflow-y-auto">
+          <div className="fixed right-0 top-16 w-96 bg-white shadow-2xl p-6 h-[85vh] overflow-y-auto border-l">
 
-            <h2 className="text-xl font-bold mb-4">
-              Shopping Cart
+            <h2 className="text-2xl font-bold mb-6 text-orange-600">
+              Your Cart
             </h2>
 
             {cartItems.length === 0 ? (
 
-              <p>Your cart is empty</p>
+              <p className="text-gray-500">Your cart is empty</p>
 
             ) : (
 
@@ -168,13 +195,12 @@ export default function Home() {
 
                   <div
                     key={item.id}
-                    className="flex justify-between items-center mb-4 border-b pb-3"
+                    className="flex justify-between items-center mb-5 border-b pb-4"
                   >
 
-                    {/* Product Info */}
                     <div>
 
-                      <p className="font-semibold text-gray-700">
+                      <p className="font-semibold text-gray-800">
                         {item.name}
                       </p>
 
@@ -182,25 +208,24 @@ export default function Home() {
                         Qty: {item.quantity}
                       </p>
 
-                      <p className="text-green-600 font-semibold">
+                      <p className="text-orange-600 font-bold">
                         ₹{item.price * item.quantity}
                       </p>
 
                     </div>
 
-                    {/* Quantity Controls */}
                     <div className="flex items-center gap-2">
 
                       <button
                         onClick={() =>
                           updateQuantity(item.id, item.quantity - 1)
                         }
-                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
                       >
                         -
                       </button>
 
-                      <span className="font-medium">
+                      <span className="font-semibold">
                         {item.quantity}
                       </span>
 
@@ -208,7 +233,7 @@ export default function Home() {
                         onClick={() =>
                           updateQuantity(item.id, item.quantity + 1)
                         }
-                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
                       >
                         +
                       </button>
@@ -226,13 +251,13 @@ export default function Home() {
 
                 ))}
 
-                <div className="font-bold mt-4">
+                <div className="font-bold text-lg mt-4 text-gray-800">
                   Total ₹{cartTotal}
                 </div>
 
                 <button
                   onClick={() => router.push("/checkout")}
-                  className="w-full bg-green-600 text-white py-2 rounded mt-4"
+                  className="w-full bg-orange-500 text-white py-3 rounded-xl mt-5 hover:bg-orange-600 transition"
                 >
                   Checkout
                 </button>
@@ -248,5 +273,7 @@ export default function Home() {
       </div>
 
     </div>
+
   );
 }
+
