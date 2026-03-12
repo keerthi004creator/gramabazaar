@@ -5,12 +5,10 @@ import { createContext, useContext, useState } from "react";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-
   const [cartItems, setCartItems] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
   const addToCart = (product) => {
-
     const existing = cartItems.find(item => item.id === product.id);
 
     if (existing) {
@@ -22,10 +20,7 @@ export function CartProvider({ children }) {
         )
       );
     } else {
-      setCartItems([
-        ...cartItems,
-        { ...product, quantity: 1 }
-      ]);
+      setCartItems([...cartItems, { ...product, quantity: 1 }]);
     }
   };
 
@@ -34,12 +29,10 @@ export function CartProvider({ children }) {
   };
 
   const updateQuantity = (id, quantity) => {
-
     if (quantity <= 0) {
       removeFromCart(id);
       return;
     }
-
     setCartItems(
       cartItems.map(item =>
         item.id === id
@@ -49,10 +42,15 @@ export function CartProvider({ children }) {
     );
   };
 
-  // ⭐ THIS FIXES YOUR ERROR
   const clearCart = () => {
     setCartItems([]);
   };
+
+  // ✅ Calculate total amount here and provide in context
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + Number(item.price) * Number(item.quantity),
+    0
+  );
 
   return (
     <CartContext.Provider
@@ -63,7 +61,8 @@ export function CartProvider({ children }) {
         updateQuantity,
         cartOpen,
         setCartOpen,
-        clearCart
+        clearCart,
+        cartTotal, // now available everywhere
       }}
     >
       {children}

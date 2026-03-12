@@ -4,12 +4,11 @@ import { useCart } from "../../context/cartContext";
 import { useRouter } from "next/navigation";
 
 export default function CartDrawer() {
-
   const {
     cartItems,
     removeFromCart,
     updateQuantity,
-    cartTotal,
+    cartTotal,  // now comes from context
     cartOpen,
     setCartOpen,
   } = useCart();
@@ -30,7 +29,6 @@ export default function CartDrawer() {
           cartOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b">
           <h2 className="text-xl font-bold">Your Cart</h2>
@@ -39,11 +37,8 @@ export default function CartDrawer() {
 
         {/* Items */}
         <div className="p-4 space-y-4 overflow-y-auto h-[65%]">
-
           {cartItems.length === 0 && (
-            <p className="text-center text-gray-500">
-              Your cart is empty
-            </p>
+            <p className="text-center text-gray-500">Your cart is empty</p>
           )}
 
           {cartItems.map((item) => (
@@ -51,22 +46,18 @@ export default function CartDrawer() {
               key={item.id}
               className="border rounded-lg p-3 flex gap-3 items-center"
             >
-
               <img
                 src={item.image}
                 className="w-16 h-16 object-cover rounded"
               />
 
               <div className="flex-1">
-
                 <p className="font-semibold">{item.name}</p>
-
                 <p className="text-green-600">
-                  ₹{item.price}
+                  ₹{Number(item.price).toLocaleString()}
                 </p>
 
                 <div className="flex items-center gap-2 mt-2">
-
                   <button
                     onClick={() => {
                       if (item.quantity === 1) {
@@ -83,16 +74,12 @@ export default function CartDrawer() {
                   <span>{item.quantity}</span>
 
                   <button
-                    onClick={() =>
-                      updateQuantity(item.id, item.quantity + 1)
-                    }
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
                     className="px-2 bg-gray-200 rounded"
                   >
                     +
                   </button>
-
                 </div>
-
               </div>
 
               <button
@@ -101,18 +88,15 @@ export default function CartDrawer() {
               >
                 Remove
               </button>
-
             </div>
           ))}
-
         </div>
 
         {/* Footer */}
         <div className="absolute bottom-0 w-full p-5 border-t bg-white">
-
           <div className="flex justify-between font-bold mb-4">
             <span>Total</span>
-            <span>₹{cartTotal}</span>
+            <span>₹{Number(cartTotal).toLocaleString()}</span>
           </div>
 
           <button
@@ -124,9 +108,7 @@ export default function CartDrawer() {
           >
             Checkout
           </button>
-
         </div>
-
       </div>
     </>
   );
