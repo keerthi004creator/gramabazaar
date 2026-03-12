@@ -2,256 +2,157 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const cardLogo =
-"https://www.shutterstock.com/image-vector/credit-card-sign-mobile-app-260nw-1776017327.jpg";
-
-const upiLogos = {
-PhonePe:
-"https://static.vecteezy.com/system/resources/previews/067/065/681/non_2x/phonepe-colored-logo-rounded-icon-transparent-background-free-png.png",
-Paytm:
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUEjY90pS-UfgHJU4glc8Aiupp1xCn_jcvRQ&s",
-GooglePay:
-"https://animationvisarts.com/wp-content/uploads/2023/11/Frame-43-1.png",
-};
-
-const codIcon =
-"https://static.vecteezy.com/system/resources/thumbnails/008/013/016/small/payment-by-cash-for-express-delivery-flat-illustration-how-people-deliver-package-and-pay-for-the-delivery-by-cash-human-hand-holds-money-and-pay-for-the-package-courier-get-payment-for-it-vector.jpg";
+import { supabase } from "../../js/supabaseClient";
+import { useCart } from "../../context/cartContext";
 
 export default function PaymentPage() {
 
 const router = useRouter();
+const { cartItems, clearCart } = useCart();
 
 const [paymentMethod,setPaymentMethod] = useState("");
 const [cardType,setCardType] = useState("");
 const [upiType,setUpiType] = useState("");
 const [address,setAddress] = useState("");
 
-const handleConfirmOrder = () => {
+const cardLogo="https://cdn-icons-png.flaticon.com/512/179/179457.png";
 
-if(!paymentMethod) return alert("Please select a payment method!");
-if(paymentMethod==="card" && !cardType) return alert("Select Credit or Debit card");
+const upiLogos={
+PhonePe:"https://static.vecteezy.com/system/resources/previews/067/065/681/non_2x/phonepe-colored-logo-rounded-icon-transparent-background-free-png.png",
+Paytm:"https://cdn-icons-png.flaticon.com/512/825/825454.png",
+GooglePay:"https://cdn-icons-png.flaticon.com/512/6124/6124998.png"
+};
+
+const codIcon="https://cdn-icons-png.flaticon.com/512/2489/2489756.png";
+
+const handleConfirmOrder = async ()=>{
+
+if(!paymentMethod) return alert("Please select payment method");
+if(paymentMethod==="card" && !cardType) return alert("Select card type");
 if(paymentMethod==="upi" && !upiType) return alert("Select UPI method");
-if(!address) return alert("Please enter your address");
+if(!address) return alert("Enter delivery address");
 
-router.push("/order-conformation");
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+alert("Please login first");
+router.push("/login");
+return;
+}
+
+const total = cartItems.reduce(
+(sum,item)=> sum + item.price * item.quantity,0
+);
+
+const paymentType =
+paymentMethod==="card"
+?cardType
+:paymentMethod==="upi"
+?upiType
+:"COD";
+
+const { error } = await supabase
+.from("orders")
+.insert([{
+user_email:user.email,
+items:cartItems,
+total:total,
+payment_method:paymentMethod,
+payment_type:paymentType,
+address:address,
+status:"Placed"
+}]);
+
+if(error){
+console.log(error);
+alert("Order Failed");
+return;
+}
+
+clearCart();
+
+alert("Order Placed Successfully");
+
+router.push("/user");
 
 };
 
 return(
 
-<div className="min-h-screen flex justify-center items-center p-6
-bg-gradient-to-br from-purple-700 via-indigo-600 to-pink-500 relative overflow-hidden">
+<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6">
 
-{/* Glow Background */}
+<div className="w-full max-w-2xl bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-10 text-white">
 
-<div className="absolute top-0 left-0 w-96 h-96 bg-pink-400 blur-[120px] opacity-30"></div>
-<div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-400 blur-[120px] opacity-30"></div>
-
-<div className="w-full max-w-2xl
-bg-white/10 backdrop-blur-xl
-border border-white/20
-shadow-2xl rounded-3xl
-p-10 text-white">
-
-<h1 className="text-3xl font-bold text-center mb-8
-bg-gradient-to-r from-pink-300 to-indigo-300 bg-clip-text text-transparent">
-
-Payment & Address
-
+<h1 className="text-3xl font-bold text-center mb-8">
+Payment & Delivery
 </h1>
 
-{/* PAYMENT METHODS */}
-
-<h2 className="text-xl font-semibold mb-5 text-white/90">
-
+<h2 className="text-lg mb-4 font-semibold">
 Select Payment Method
-
 </h2>
 
 <div className="flex flex-col gap-4 mb-8">
 
-{/* CARD */}
-
 <button
-
-onClick={()=>{
-setPaymentMethod("card");
-setUpiType("");
-}}
-
-className={`flex items-center gap-4 p-4 rounded-2xl
-border transition shadow-xl backdrop-blur-lg
-
-${paymentMethod==="card"
-
-? "bg-white/20 border-pink-300 scale-[1.02]"
-: "bg-white/5 border-white/20 hover:bg-white/10"
-
-}`}
-
+onClick={()=>{setPaymentMethod("card");setUpiType("");}}
+className={`p-4 rounded-xl flex items-center gap-3 border transition hover:scale-105 ${paymentMethod==="card"?"bg-white/30":"bg-white/10"}`}
 >
-
-<img src={cardLogo} className="h-10 rounded" />
-
-<span className="text-lg font-semibold">
-
+<img src={cardLogo} className="h-7"/>
 Card
-
-</span>
-
 </button>
 
-{/* UPI */}
-
 <button
-
-onClick={()=>{
-setPaymentMethod("upi");
-setCardType("");
-}}
-
-className={`flex items-center gap-4 p-4 rounded-2xl
-border transition shadow-xl backdrop-blur-lg
-
-${paymentMethod==="upi"
-
-? "bg-white/20 border-pink-300 scale-[1.02]"
-: "bg-white/5 border-white/20 hover:bg-white/10"
-
-}`}
-
+onClick={()=>{setPaymentMethod("upi");setCardType("");}}
+className={`p-4 rounded-xl border transition hover:scale-105 ${paymentMethod==="upi"?"bg-white/30":"bg-white/10"}`}
 >
-
-<span className="text-lg font-semibold">
-
 UPI
-
-</span>
-
-<div className="flex gap-3">
-
-{Object.entries(upiLogos).map(([name,logo])=>(
-
-<img key={name} src={logo} className="h-8"/>
-
-))}
-
-</div>
-
 </button>
 
-{/* COD */}
-
 <button
-
-onClick={()=>{
-setPaymentMethod("cod");
-setCardType("");
-setUpiType("");
-}}
-
-className={`flex items-center gap-4 p-4 rounded-2xl
-border transition shadow-xl backdrop-blur-lg
-
-${paymentMethod==="cod"
-
-? "bg-white/20 border-pink-300 scale-[1.02]"
-: "bg-white/5 border-white/20 hover:bg-white/10"
-
-}`}
-
+onClick={()=>{setPaymentMethod("cod");setCardType("");setUpiType("");}}
+className={`p-4 rounded-xl flex items-center gap-3 border transition hover:scale-105 ${paymentMethod==="cod"?"bg-white/30":"bg-white/10"}`}
 >
-
-<img src={codIcon} className="h-8 rounded"/>
-
-<span className="text-lg font-semibold">
-
-Cash on Delivery
-
-</span>
-
+<img src={codIcon} className="h-7"/>
+Cash On Delivery
 </button>
 
 </div>
 
-{/* CARD TYPES */}
+{paymentMethod==="card" &&(
 
-{paymentMethod==="card" && (
-
-<div className="flex gap-6 justify-center mb-8">
+<div className="flex gap-4 mb-6">
 
 <button
-
 onClick={()=>setCardType("credit")}
-
-className={`px-6 py-3 rounded-xl border transition shadow-lg
-
-${cardType==="credit"
-
-? "bg-pink-400 text-white border-pink-300"
-: "bg-white/10 border-white/20 hover:bg-white/20"
-
-}`}
-
+className={`px-4 py-2 rounded-lg ${cardType==="credit"?"bg-pink-500":"bg-white/20"}`}
 >
-
 Credit Card
-
 </button>
 
 <button
-
 onClick={()=>setCardType("debit")}
-
-className={`px-6 py-3 rounded-xl border transition shadow-lg
-
-${cardType==="debit"
-
-? "bg-pink-400 text-white border-pink-300"
-: "bg-white/10 border-white/20 hover:bg-white/20"
-
-}`}
-
+className={`px-4 py-2 rounded-lg ${cardType==="debit"?"bg-pink-500":"bg-white/20"}`}
 >
-
 Debit Card
-
 </button>
 
 </div>
 
 )}
 
-{/* UPI OPTIONS */}
+{paymentMethod==="upi" &&(
 
-{paymentMethod==="upi" && (
-
-<div className="flex gap-4 justify-center mb-8">
+<div className="flex gap-4 mb-6">
 
 {Object.entries(upiLogos).map(([name,logo])=>(
 
 <button
-
 key={name}
-
 onClick={()=>setUpiType(name)}
-
-className={`flex items-center gap-2 px-4 py-2 rounded-xl border shadow-lg transition
-
-${upiType===name
-
-? "bg-indigo-400 text-white border-indigo-300"
-: "bg-white/10 border-white/20 hover:bg-white/20"
-
-}`}
-
+className={`px-4 py-2 rounded-lg flex items-center gap-2 ${upiType===name?"bg-indigo-500":"bg-white/20"}`}
 >
-
 <img src={logo} className="h-6"/>
-
-<span>{name}</span>
-
+{name}
 </button>
 
 ))}
@@ -259,51 +160,19 @@ ${upiType===name
 </div>
 
 )}
-
-{/* ADDRESS */}
-
-<div className="mb-8">
-
-<label className="block font-semibold mb-2">
-
-Delivery Address
-
-</label>
 
 <textarea
-
+placeholder="Enter Delivery Address"
 value={address}
-
 onChange={(e)=>setAddress(e.target.value)}
-
-rows={3}
-
-placeholder="Enter your delivery address"
-
-className="w-full p-3 rounded-xl
-bg-white/10 border border-white/20
-placeholder-white/60
-focus:outline-none focus:ring-2 focus:ring-pink-400"
-
+className="w-full p-3 rounded-lg text-black mb-6"
 />
 
-</div>
-
-{/* PAY BUTTON */}
-
 <button
-
-onClick={()=>router.push("/order-conformation")}
-
-className="w-full py-4 rounded-xl
-bg-gradient-to-r from-pink-500 to-indigo-500
-text-white text-lg font-semibold
-shadow-xl hover:scale-105 transition"
-
+onClick={handleConfirmOrder}
+className="w-full py-4 bg-gradient-to-r from-pink-500 to-indigo-500 rounded-xl text-lg font-semibold hover:scale-105 transition"
 >
-
-Pay Now
-
+Confirm Order
 </button>
 
 </div>
@@ -311,4 +180,5 @@ Pay Now
 </div>
 
 );
+
 }

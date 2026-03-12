@@ -2,35 +2,41 @@
 
 import { useRouter } from "next/navigation";
 
-export default function OrderSuccess() {
-  const router = useRouter();
+export default function OrderSuccess(){
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-green-50">
+const router = useRouter();
 
-      <div className="bg-white shadow-lg rounded-xl p-10 text-center max-w-md">
+return(
 
-        <div className="text-6xl mb-4">
-          ✅
-        </div>
+<div className="min-h-screen flex items-center justify-center bg-green-50">
 
-        <h1 className="text-3xl font-bold text-green-600 mb-3">
-          Order Placed Successfully
-        </h1>
+<div className="bg-white shadow-lg rounded-xl p-10 text-center max-w-md">
 
-        <p className="text-gray-600 mb-6">
-          Your fresh farm products will reach you soon.
-        </p>
+<div className="text-6xl mb-4">
+✅
+</div>
 
-        <button
-          onClick={() => router.push("/")}
-          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
-        >
-          Continue Shopping
-        </button>
+<h1 className="text-3xl font-bold text-green-600 mb-3">
+Order Placed Successfully
+</h1>
 
-      </div>
+<p className="text-gray-600 mb-6">
+Your fresh farm products will reach you soon.
+</p>
 
-    </div>
-  );
+<button
+onClick={()=>router.push("/")}
+className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
+>
+
+Continue Shopping
+
+</button>
+
+</div>
+
+</div>
+
+);
+
 }

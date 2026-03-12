@@ -1,184 +1,178 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState,useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../js/supabaseClient";
 
-export default function UserPage() {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [editing, setEditing] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+export default function UserPage(){
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) { router.push("/login"); return; }
-    const u = JSON.parse(storedUser);
-    setUser(u);
-    setPhone(u.phone || "");
-    setAddress(u.address || "");
-  }, []);
+const router = useRouter();
 
-  const handleLogout = () => {
+const [user,setUser] = useState(null);
+const [phone,setPhone] = useState("");
+const [address,setAddress] = useState("");
+const [orders,setOrders] = useState([]);
+
+useEffect(()=>{
+
+const storedUser = localStorage.getItem("user");
+
+if(!storedUser){
+router.push("/login");
+return;
+}
+
+const u = JSON.parse(storedUser);
+setUser(u);
+
+fetchProfile(u.email);
+fetchOrders(u.email);
+
+},[]);
+
+ const handleLogout = () => {
     localStorage.removeItem("user");
     router.replace("/login");
   };
 
-  const handleSaveProfile = async () => {
-    try {
-      const { error } = await supabase
-        .from("users_profiles")
-        .upsert({ email: user.email, phone, address }, { onConflict: ["email"] });
-      if (error) throw error;
+const fetchProfile = async(email)=>{
 
-      const updatedUser = { ...user, phone, address };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setEditing(false);
-      alert("Profile updated successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Error updating profile: " + err.message);
-    }
-  };
+const {data} = await supabase
+.from("users_profiles")
+.select("*")
+.eq("email",email)
+.single();
 
-  if (!user) return null;
+if(data){
+setPhone(data.phone||"");
+setAddress(data.address||"");
+}
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F3FF] via-[#EEF2FF] to-[#ECFEFF] p-8 flex justify-center items-start">
+};
 
-      <div className="w-full max-w-5xl bg-white border border-[#E5E7EB] rounded-3xl shadow-xl p-10">
+const fetchOrders = async(email)=>{
 
-        <h2 className="text-4xl font-bold text-center mb-10 
-        bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] bg-clip-text text-transparent">
-          My Account
-        </h2>
+const {data} = await supabase
+.from("orders")
+.select("*")
+.eq("user_email",email)
+.order("created_at",{ascending:false});
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+if(data) setOrders(data);
 
-          {/* USER PROFILE CARD */}
-          <div className="bg-white border border-[#E5E7EB] rounded-3xl shadow-md p-6 transition hover:shadow-xl hover:-translate-y-1 flex flex-col gap-3">
+};
 
-            <h3 className="text-xl font-semibold text-[#111827] mb-2">
-              User Info
-            </h3>
+const saveProfile = async()=>{
 
-            <p className="text-[#111827]">
-              <strong>Name:</strong> {user.username}
-            </p>
+await supabase
+.from("users_profiles")
+.upsert({email:user.email,phone,address},{onConflict:["email"]});
 
-            <p className="text-[#111827]">
-              <strong>Email:</strong> {user.email}
-            </p>
+alert("Profile updated");
 
-            <p className="text-[#111827]">
-              <strong>Phone:</strong>{" "}
-              {editing ? (
-                <input
-                  className="border border-[#D1D5DB] rounded-lg p-2 mt-1 w-full focus:ring-2 focus:ring-indigo-500 outline-none"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-              ) : (
-                <span className="text-[#6B7280]">
-                  {user.phone || "Not Provided"}
-                </span>
-              )}
-            </p>
+};
 
-            <p className="text-[#111827]">
-              <strong>Address:</strong>{" "}
-              {editing ? (
-                <textarea
-                  className="border border-[#D1D5DB] rounded-lg p-2 mt-1 w-full focus:ring-2 focus:ring-indigo-500 outline-none"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              ) : (
-                <span className="text-[#6B7280]">
-                  {user.address || "Not Provided"}
-                </span>
-              )}
-            </p>
+const deleteOrder = async(id)=>{
 
-            {!editing ? (
-              <button
-                onClick={() => setEditing(true)}
-                className="mt-3 px-4 py-2 rounded-xl text-white font-semibold
-                bg-gradient-to-r from-[#4F46E5] to-[#06B6D4]
-                hover:opacity-90 transition shadow"
-              >
-                Edit Profile
-              </button>
-            ) : (
-              <button
-                onClick={handleSaveProfile}
-                className="mt-3 px-4 py-2 rounded-xl text-white font-semibold
-                bg-emerald-500 hover:bg-emerald-600 transition shadow"
-              >
-                Save Profile
-              </button>
-            )}
+await supabase
+.from("orders")
+.delete()
+.eq("id",id);
 
-          </div>
+setOrders(prev=>prev.filter(o=>o.id!==id));
 
-          {/* ORDERS CARD */}
-          <div className="bg-white border border-[#E5E7EB] rounded-3xl shadow-md p-6 transition hover:shadow-xl hover:-translate-y-1 flex flex-col gap-3">
+};
 
-            <h3 className="text-xl font-semibold text-[#111827] mb-2">
-              Orders
-            </h3>
+if(!user) return null;
 
-            {user.orders?.length > 0 ? (
-              user.orders.map((order, idx) => (
-                <div
-                  key={idx}
-                  className="bg-gray-50 border border-[#E5E7EB] rounded-xl p-4 shadow-sm mb-4"
-                >
+return(
 
-                  <p className="text-sm text-gray-700">
-                    <strong>Order ID:</strong> {order.id}
-                  </p>
+<div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-10 flex justify-center">
 
-                  <p className="text-sm text-gray-700">
-                    <strong>Total:</strong>{" "}
-                    <span className="text-emerald-600 font-semibold">
-                      ₹{order.total}
-                    </span>
-                  </p>
+<div className="max-w-6xl w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-10 text-white">
 
-                  <p className="text-sm text-gray-700">
-                    <strong>Status:</strong>{" "}
-                    <span className="text-indigo-600 font-medium">
-                      {order.status}
-                    </span>
-                  </p>
+<h2 className="text-3xl font-bold text-center mb-10">
+My Account
+</h2>
 
-                  <p className="mt-2 font-semibold text-gray-700">Items:</p>
+<div className="grid md:grid-cols-2 gap-10">
 
-                  <ul className="ml-5 list-disc text-sm text-gray-600">
-                    {order.items?.map((i) => (
-                      <li key={i.id}>
-                        {i.name} × {i.quantity} (₹{i.price})
-                      </li>
-                    ))}
-                  </ul>
+<div>
 
-                </div>
-              ))
-            ) : (
-              <p className="text-[#6B7280]">
-                No orders yet.
-              </p>
-            )}
+<h3 className="text-xl font-semibold mb-4">
+Profile
+</h3>
 
-          </div>
+<p><b>Name:</b> {user.username}</p>
+<p><b>Email:</b> {user.email}</p>
 
-        </div>
+<input
+value={phone}
+onChange={(e)=>setPhone(e.target.value)}
+placeholder="Phone"
+className="w-full p-2 rounded text-black mt-3"
+/>
 
-        {/* LOGOUT BUTTON */}
-        <div className="flex justify-center mt-10">
+<textarea
+value={address}
+onChange={(e)=>setAddress(e.target.value)}
+placeholder="Address"
+className="w-full p-2 rounded text-black mt-3"
+/>
+
+<button
+onClick={saveProfile}
+className="mt-4 bg-gradient-to-r from-indigo-500 to-pink-500 px-5 py-2 rounded-lg hover:scale-105 transition"
+>
+Save Profile
+</button>
+
+</div>
+
+<div>
+
+<h3 className="text-xl font-semibold mb-4">
+My Orders
+</h3>
+
+{orders.length>0 ?(
+
+orders.map(order=>(
+
+<div
+key={order.id}
+className="bg-white/10 border border-white/20 rounded-xl p-5 mb-4 hover:scale-[1.02] transition"
+>
+
+<p><b>Total:</b> ₹{order.total}</p>
+<p><b>Status:</b> {order.status}</p>
+
+<ul className="list-disc ml-6 mt-2">
+
+{order.items?.map((item,index)=>(
+<li key={index}>
+{item.name} × {item.quantity}
+</li>
+))}
+
+</ul>
+
+<button
+onClick={()=>deleteOrder(order.id)}
+className="text-red-400 mt-2"
+>
+Delete Order
+</button>
+
+</div>
+
+))
+
+):( <p>No Orders Yet</p> )}
+
+</div>
+
+ <div className="flex justify-center mt-10">
 
           <button
             onClick={handleLogout}
@@ -190,8 +184,24 @@ export default function UserPage() {
 
         </div>
 
-      </div>
+         <div className="flex justify-center mt-10">
 
-    </div>
-  );
+          <button
+            onClick={() => router.push("/")}
+            className="px-6 py-3 rounded-xl font-semibold text-white
+            bg-rose-500 hover:bg-rose-600 transition shadow-lg"
+          >
+            Back to Home
+          </button>
+
+        </div>
+
+</div>
+
+</div>
+
+</div>
+
+);
+
 }

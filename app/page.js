@@ -68,17 +68,14 @@ export default function Home() {
 
 <li className="text-green-600 border-b-2 border-green-600 pb-1 cursor-pointer">Home</li>
 
-<li className="cursor-pointer hover:text-green-600"
-onClick={()=>router.push("/shop")}>Shop</li>
-
 <li onClick={()=>router.push("/shop")}
 className="cursor-pointer hover:text-green-600">Categories</li>
 
-<li className="cursor-pointer hover:text-green-600">Offers</li>
+<li onClick={()=>router.push("/about")} 
+className="cursor-pointer hover:text-green-600">About</li>
 
-<li className="cursor-pointer hover:text-green-600">About</li>
-
-<li className="cursor-pointer hover:text-green-600">Contact</li>
+<li onClick={()=>router.push("/contact")}
+ className="cursor-pointer hover:text-green-600">Contact</li>
 
 </ul>
 
@@ -214,6 +211,16 @@ className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition"
 </div>
 
 </section>
+
+ {/* FOOTER */}
+
+      <footer className="bg-black/40 backdrop-blur-md text-white py-10 text-center">
+
+        <p>
+          © 2026 GramaBazaar • Connecting Villages to Cities
+        </p>
+
+      </footer>
 
 </div>
 
